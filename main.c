@@ -64,6 +64,35 @@ void Init_USART1(void)
 	USART_Cmd(USART1, ENABLE);
 }
 
+void USART_send(USART_TypeDef* USARTx, volatile char *s)
+{
+	while(*s)
+	{
+		/*
+		 * The LSR, line status register shows the current state of communication.
+		 * Errors are reflected in this register.
+		 * The state of the receive and transmit buffers is also available.
+		 *
+		 * 0	Data available
+		 * 1	Overrun error
+		 * 2	Parity error
+		 * 3	Framing error
+		 * 4	Break signal received / interrupt
+		 * 5	Transmitter Holding Register is empty
+		 * 6	Data Holding Register is empty, and line is idle
+		 * 7	Errornous data in FIFO
+		 */
+		while(!(USARTx -> SR & 0x40));
+		USART_SendData(USARTx, *s);
+		*s++;
+	}
+}
+
+void USART1_IRQHandler(void)
+{
+
+}
+
 int main(void)
 {
 
